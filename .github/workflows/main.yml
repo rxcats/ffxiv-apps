@@ -10,21 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
 
       - name: Publish with dotnet
-        run: dotnet publish --configuration Release --output build
+        run: dotnet build -c Release
 
       - name: Deploy to Github Pages
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: main # The branch the action should deploy from.
           BRANCH: gh-pages-from-actions # The branch the action should deploy to.
-          FOLDER: build/wwwroot # The folder the action should deploy.
+          FOLDER: bin/Release/net9.0/wwwroot # The folder the action should deploy.
           SINGLE_COMMIT: true
