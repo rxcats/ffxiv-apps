@@ -16,8 +16,4 @@
       <AdditionalFiles Include="Pages\MacroParser.razor" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="wwwroot\.nojekyll" />
-    </ItemGroup>
-
 </Project>

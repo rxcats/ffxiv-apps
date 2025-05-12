@@ -21,6 +21,7 @@ jobs:
         run: dotnet build -c Release
 
       - name: Deploy to Github Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: actions/deploy-pages@v4
         with:
-          folder: bin/Release/net9.0/wwwroot
+          token: ${{ github.token }}
+          artifact_name: bin/Release/net9.0/wwwroot
