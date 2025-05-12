@@ -1,0 +1,77 @@
+﻿@page "/macro"
+@using System.Collections.Immutable
+@using System.Text.RegularExpressions
+
+<PageTitle>FF14 Apps - Macro</PageTitle>
+
+<div class="mb-3">
+    <Button Color="ButtonColor.Primary" @onclick="OnClickParseButton">계산</Button>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">
+        <Badge Color="BadgeColor.Secondary" IndicatorType="BadgeIndicatorType.RoundedPill">매크로 입력</Badge>
+    </label>
+    <TextAreaInput Rows="20" @bind-Value="_macroText"/>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">
+        <Badge Color="BadgeColor.Secondary" IndicatorType="BadgeIndicatorType.RoundedPill">동작시간(초)</Badge>
+    </label>
+    <NumberInput @bind-Value="_macroSeconds" Disabled="true"/>
+</div>
+
+<Toasts class="p-3" Messages="_messages" Placement="ToastsPlacement.TopRight" AutoHide="true" Delay="5000"/>
+
+@code {
+    private string? _macroText;
+
+    private int? _macroSeconds = 0;
+
+    private readonly List<ToastMessage> _messages = new List<ToastMessage>();
+
+    private readonly string _waitSecondsPattern = "<wait.([0-9])>";
+
+    private void AlertToast()
+    {
+        _messages.Add(
+            new ToastMessage
+            {
+                Type = ToastType.Danger,
+                Message = "매크로를 입력하세요!",
+            }
+        );
+    }
+
+    private void OnClickParseButton()
+    {
+        if (string.IsNullOrWhiteSpace(_macroText))
+        {
+            AlertToast();
+            return;
+        }
+
+        _macroSeconds = _macroText.Split("\n")
+            .Select(value =>
+            {
+                Match match = Regex.Match(value.Trim(), _waitSecondsPattern);
+
+                if (match.Groups.Count == 2)
+                {
+                    Group group = match.Groups.Values.ToImmutableArray()[1];
+
+                    int seconds;
+
+                    if (int.TryParse(group.Value, out seconds))
+                    {
+                        return seconds;
+                    }
+                }
+
+                return 0;
+            })
+            .Aggregate((a, b) => a + b);
+    }
+
+}

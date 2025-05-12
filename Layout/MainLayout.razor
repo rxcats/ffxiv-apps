@@ -1,0 +1,45 @@
+﻿@inherits LayoutComponentBase
+
+<BlazorBootstrapLayout StickyHeader="true">
+    <HeaderSection>
+        <ThemeSwitcher Class="ps-3 ps-lg-2"/>
+    </HeaderSection>
+
+    <SidebarSection>
+        <Sidebar2 Href="/"
+                  ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+                  Title="FF14 Apps"
+                  BadgeText="1.0"
+                  DataProvider="Sidebar2DataProvider"
+                  WidthUnit="Unit.Px"/>
+    </SidebarSection>
+
+    <ContentSection>
+        @Body
+    </ContentSection>
+
+</BlazorBootstrapLayout>
+
+@code {
+    private IEnumerable<NavItem>? _navItems;
+
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    {
+        if (_navItems is null)
+        {
+            _navItems = GetNavItems();
+        }
+
+        return await Task.FromResult(request.ApplyTo(_navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        return new List<NavItem>
+        {
+            new NavItem { Id="1",Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All },
+            new NavItem { Id="2",Href = "/macro", IconName = IconName.Mouse, Text = "FF14 Macro" },
+        };
+    }
+
+}
