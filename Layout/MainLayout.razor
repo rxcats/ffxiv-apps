@@ -1,12 +1,14 @@
 ﻿@inherits LayoutComponentBase
+@inject IConfiguration Config
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
+        <base href="/@(Config.GetValue<string>("AppBasePath"))" />
         <ThemeSwitcher Class="ps-3 ps-lg-2"/>
     </HeaderSection>
 
     <SidebarSection>
-        <Sidebar2 Href="/"
+        <Sidebar2 Href="@GetHref("/")"
                   ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
                   Title="FF14 Apps"
                   BadgeText="1.0"
@@ -37,9 +39,14 @@
     {
         return new List<NavItem>
         {
-            new NavItem { Id="1",Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All },
-            new NavItem { Id="2",Href = "/macro", IconName = IconName.Mouse, Text = "FF14 Macro" },
+            new NavItem { Id="1",Href = GetHref("/"), IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All },
+            new NavItem { Id="2",Href = GetHref("/macro"), IconName = IconName.Mouse, Text = "FF14 Macro" },
         };
+    }
+
+    private string GetHref(string path)
+    {
+        return "/" + Config.GetValue<string>("AppBasePath")! + path.TrimStart('/');
     }
 
 }
