@@ -124,9 +124,14 @@
         Responsive="true">
 
         <GridColumns>
-            <GridColumn TItem="SoldItem" HeaderText="Id" PropertyName="Id"
+            <GridColumn TItem="SoldItem" HeaderText="판매일" PropertyName="SoldDate"
                         HeaderTextAlignment="Alignment.Center">
-                @context.Id
+                @context.SoldDate
+            </GridColumn>
+
+            <GridColumn TItem="SoldItem" HeaderText="아이콘" PropertyName="ItemName"
+                        HeaderTextAlignment="Alignment.Center">
+                <Image Src="@context.ItemIconUrl" Style="width: 40px; height: 40px;"/>
             </GridColumn>
 
             <GridColumn TItem="SoldItem" HeaderText="아이템명" PropertyName="ItemName"
@@ -149,9 +154,9 @@
                 @context.Price
             </GridColumn>
 
-            <GridColumn TItem="SoldItem" HeaderText="판매일" PropertyName="SoldDate"
+            <GridColumn TItem="SoldItem" HeaderText="Id" PropertyName="Id"
                         HeaderTextAlignment="Alignment.Center">
-                @context.SoldDate
+                @context.Id
             </GridColumn>
         </GridColumns>
     </Grid>
@@ -190,6 +195,8 @@
         _searchYear = now.Year;
         _searchMonth = now.Month;
         _editContext = new EditContext(_soldItemInput);
+
+        Task.Run(async () => await Search());
         base.OnInitialized();
     }
 
