@@ -26,7 +26,7 @@
     </div>
 
     <div class="col-md-3 col-sm-4" style="padding-top: 1.875em">
-        <Button Color="ButtonColor.Primary" @onclick="Search">
+        <Button Color="ButtonColor.Primary" @onclick="SoldItemReload">
             <Icon Name="IconName.Search"/>
             조회
         </Button>
@@ -110,6 +110,10 @@
             <Icon Name="IconName.Recycle"/>
             새로고침
         </Button>
+
+        <Button Color="ButtonColor.Success">
+            <Icon Name="IconName.Coin"/> 총수입(길): @_totalPrice.ToString("N0")
+        </Button>
     </div>
 
     <Grid
@@ -130,7 +134,7 @@
             </GridColumn>
 
             <GridColumn TItem="SoldItem" HeaderText="아이콘" PropertyName="ItemName"
-                        HeaderTextAlignment="Alignment.Center">
+                        HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
                 <Image Src="@context.ItemIconUrl" Style="width: 40px; height: 40px;"/>
             </GridColumn>
 
@@ -151,7 +155,7 @@
 
             <GridColumn TItem="SoldItem" HeaderText="판매가격(길)" PropertyName="Price"
                         HeaderTextAlignment="Alignment.Center">
-                @context.Price
+                @context.Price?.ToString("N0")
             </GridColumn>
 
             <GridColumn TItem="SoldItem" HeaderText="Id" PropertyName="Id"
@@ -189,6 +193,8 @@
 
     private SoldItem? _soldItemForDelete;
 
+    private int _totalPrice;
+
     protected override void OnInitialized()
     {
         var now = DateTime.Now;
@@ -196,7 +202,7 @@
         _searchMonth = now.Month;
         _editContext = new EditContext(_soldItemInput);
 
-        Task.Run(async () => await Search());
+        Task.Run(async () => await SoldItemReload());
         base.OnInitialized();
     }
 
@@ -244,12 +250,6 @@
         }
 
         return [];
-    }
-
-    private async Task Search()
-    {
-        _soldItems = await GetSoldItems();
-        await _grid.RefreshDataAsync();
     }
 
     private async Task ToggleContentAsync() => await _collapse.ToggleAsync();
@@ -446,8 +446,7 @@
                 ));
             }
 
-            _soldItems = await GetSoldItems();
-            await _grid.RefreshDataAsync();
+            await SoldItemReload();
         }
         catch (Exception e)
         {
@@ -465,6 +464,10 @@
     private async Task SoldItemReload()
     {
         _soldItems = await GetSoldItems();
+
+        _totalPrice = _soldItems
+            .Sum(item => item.Price) ?? 0;
+
         await _grid.RefreshDataAsync();
     }
 
