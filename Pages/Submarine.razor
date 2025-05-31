@@ -175,6 +175,8 @@
 
     [Inject] IWebAssemblyHostEnvironment Env { get; set; } = null!;
 
+    [Inject] PreloadService PreloadService { get; set; } = null!;
+
     private Grid<SoldItem> _grid = null!;
 
     private Collapse _collapse = null!;
@@ -273,6 +275,8 @@
 
         try
         {
+            PreloadService.Show();
+
             using var response = await HttpClient.PostAsJsonAsync(WithApiPath(), _soldItemInput);
 
             if (response.IsSuccessStatusCode)
@@ -286,8 +290,10 @@
                     message: "저장되었습니다."
                 ));
 
-                _soldItemInput = new SoldItemInput();
+                _soldItemInput.InitializeInput();
                 _editContext = new EditContext(_soldItemInput);
+
+                await SoldItemReload();
             }
             else
             {
@@ -305,11 +311,15 @@
         {
             NotifySystemError(e.Message);
         }
+        finally
+        {
+            PreloadService.Hide();
+        }
     }
 
     private void ResetForm()
     {
-        _soldItemInput = new SoldItemInput();
+        _soldItemInput.Reset();
         _editContext = new EditContext(_soldItemInput);
     }
 
@@ -411,6 +421,8 @@
 
         try
         {
+            PreloadService.Show();
+
             using var response = await HttpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -442,6 +454,10 @@
         {
             NotifySystemError(e.Message);
         }
+        finally
+        {
+            PreloadService.Hide();
+        }
     }
 
     private void NotifySystemError(string e)
@@ -458,12 +474,25 @@
 
     private async Task SoldItemReload()
     {
-        _soldItems = await GetSoldItems();
+        try
+        {
+            PreloadService.Show();
 
-        _totalPrice = _soldItems
-            .Sum(item => item.Price) ?? 0;
+            _soldItems = await GetSoldItems();
 
-        await _grid.RefreshDataAsync();
+            _totalPrice = _soldItems
+                .Sum(item => item.Price) ?? 0;
+
+            await _grid.RefreshDataAsync();
+        }
+        catch (Exception e)
+        {
+            NotifySystemError(e.Message);
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
     }
 
     public class SoldItemInput
@@ -509,6 +538,21 @@
 
                 return new string(charArray);
             }
+        }
+
+        public void InitializeInput()
+        {
+            ItemId = 0;
+            ItemIcon = 0;
+            ItemName = string.Empty;
+            Quantity = 1;
+            Price = 0;
+        }
+
+        public void Reset()
+        {
+            InitializeInput();
+            SoldDate = DateOnly.FromDateTime(DateTime.Now);
         }
     }
 
