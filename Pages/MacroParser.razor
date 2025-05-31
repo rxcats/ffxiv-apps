@@ -5,7 +5,7 @@
 <PageTitle>FF14 Apps - Macro</PageTitle>
 
 <div class="mb-3">
-    <Button Color="ButtonColor.Primary" @onclick="OnClickParseButton">계산</Button>
+    <Button Color="ButtonColor.Primary" @onclick="OnClickParseButton"><Icon Name="IconName.Calculator"/> 계산</Button>
 </div>
 
 <div class="mb-3">
@@ -29,7 +29,7 @@
 
     private int? _macroSeconds = 0;
 
-    private readonly List<ToastMessage> _messages = new List<ToastMessage>();
+    private readonly List<ToastMessage> _messages = new();
 
     private readonly string _waitSecondsPattern = "<wait.([0-9])>";
 
@@ -44,6 +44,7 @@
         );
     }
 
+    // TODO. 2단계 매크로 입력하여 계산하기
     private void OnClickParseButton()
     {
         if (string.IsNullOrWhiteSpace(_macroText))
@@ -61,9 +62,7 @@
                 {
                     Group group = match.Groups.Values.ToImmutableArray()[1];
 
-                    int seconds;
-
-                    if (int.TryParse(group.Value, out seconds))
+                    if (int.TryParse(group.Value, out int seconds))
                     {
                         return seconds;
                     }

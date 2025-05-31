@@ -8,13 +8,6 @@
 <PageTitle>FF14 Apps - 고잉마샤호</PageTitle>
 
 <div class="row mb-3">
-    <div class="col-md-6 col-sm-12">
-        <label class="p-lg-1">인증토큰</label>
-        <TextInput @bind-Value="_authToken" Placeholder="인증토큰"/>
-    </div>
-</div>
-
-<div class="row mb-3">
     <div class="col-md-3 col-sm-6">
         <label class="p-lg-1">년도</label>
         <NumberInput TValue="int" @bind-Value="_searchYear" Placeholder="년도"/>
@@ -46,6 +39,13 @@
             <CardBody>
                 <EditForm EditContext="@_editContext" OnValidSubmit="HandleValidSubmit" novalidate>
                     <DataAnnotationsValidator/>
+
+                    <div class="form-group row mb-3">
+                        <label class="col-md-2 col-form-label">인증토큰: <span class="text-danger">*</span></label>
+                        <div class="col-md-10">
+                            <TextInput @bind-Value="_authToken" Placeholder="인증토큰"/>
+                        </div>
+                    </div>
 
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">아이템명: <span class="text-danger">*</span></label>
@@ -121,7 +121,7 @@
         TItem="SoldItem"
         DataProvider="SoldItemDataProvider"
         Class="table table-hover table-bordered table-striped"
-        EmptyText="텅"
+        EmptyText="텅!"
         AllowSelection="true"
         SelectionMode="GridSelectionMode.Single"
         SelectedItemsChanged="OnSelectedItemsChanged"
@@ -359,6 +359,10 @@
         if (soldItems is not null && soldItems.Any())
         {
             _soldItemForDelete = soldItems.First();
+        }
+        else
+        {
+            _soldItemForDelete = null;
         }
 
         return Task.CompletedTask;

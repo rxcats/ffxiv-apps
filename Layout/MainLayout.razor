@@ -4,7 +4,7 @@
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <base href="/@(Config.GetValue<string>("AppBasePath"))"/>
-        <ThemeSwitcher Class="ps-3 ps-lg-2"/>
+        <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End"/>
     </HeaderSection>
 
     <SidebarSection>
@@ -39,10 +39,10 @@
     {
         return new List<NavItem>
         {
-            new NavItem { Id = "1", Href = GetHref("/"), IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
-            new NavItem { Id = "2", Href = GetHref("/macro"), IconName = IconName.Mouse, Text = "FF14 Macro" },
-            new NavItem { Id = "3", Href = GetHref("/housekeeper"), IconName = IconName.Minecart, Text = "FF14 집사장비" },
-            new NavItem { Id = "4", Href = GetHref("/submarine"), IconName = IconName.Minecart, Text = "FF14 고잉마샤호" },
+            new() { Id = "1", Href = GetHref("/"), IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+            new() { Id = "2", Href = GetHref("/macro"), IconName = IconName.Mouse, Text = "FF14 Macro" },
+            new() { Id = "3", Href = GetHref("/housekeeper"), IconName = IconName.MinecartLoaded, Text = "FF14 집사장비" },
+            new() { Id = "4", Href = GetHref("/submarine"), IconName = IconName.Controller, Text = "FF14 고잉마샤호" },
         };
     }
 
