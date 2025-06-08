@@ -51,7 +51,8 @@
                         <label class="col-md-2 col-form-label">아이템명: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
                             <TextInput Value="@_soldItemInput.ItemName" ValueExpression="() => _soldItemInput.ItemName"
-                                       ValueChanged="value => ItemNameChanged(value)" Placeholder="아이템명"/>
+                                       ValueChanged="value => ItemNameChanged(value)" Placeholder="아이템명"
+                                       Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.ItemName)"/>
                         </div>
                         <div class="mt-1 col-md-10">
@@ -167,6 +168,15 @@
 </div>
 
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight"/>
+
+<style>
+    .ime-active {
+        -webkit-ime-mode:active;
+        -moz-ime-mode:active;
+        -ms-ime-mode:active;
+        ime-mode:active;
+    }
+</style>
 
 @code {
     [Inject] ToastService ToastService { get; set; } = null!;
