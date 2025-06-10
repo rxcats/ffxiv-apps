@@ -113,7 +113,8 @@
         </Button>
 
         <Button Color="ButtonColor.Success">
-            <Icon Name="IconName.Coin"/> 총수입(길): @_totalPrice.ToString("N0")
+            <Icon Name="IconName.Coin"/>
+            총수입(길): @_totalPrice.ToString("N0")
         </Button>
     </div>
 
@@ -134,24 +135,15 @@
                 @context.SoldDate
             </GridColumn>
 
-            <GridColumn TItem="SoldItem" HeaderText="아이콘" PropertyName="ItemName"
+            <GridColumn TItem="SoldItem" HeaderText="아이템/수량" PropertyName="ItemName"
                         HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-                <Image Src="@context.ItemIconUrl" Style="width: 40px; height: 40px;"/>
+                <Image Src="@context.ItemIconUrl" Style="width: 40px; height: 40px;" Alt="@context.ItemName"/>
+                <Badge Color="BadgeColor.Secondary" IndicatorType="BadgeIndicatorType.RoundedPill">@context.Quantity</Badge>
             </GridColumn>
 
             <GridColumn TItem="SoldItem" HeaderText="아이템명" PropertyName="ItemName"
                         HeaderTextAlignment="Alignment.Center">
                 @context.ItemName
-            </GridColumn>
-
-            <GridColumn TItem="SoldItem" HeaderText="아이템번호" PropertyName="ItemId"
-                        HeaderTextAlignment="Alignment.Center">
-                @context.ItemId
-            </GridColumn>
-
-            <GridColumn TItem="SoldItem" HeaderText="판매수량" PropertyName="Quantity"
-                        HeaderTextAlignment="Alignment.Center">
-                @context.Quantity
             </GridColumn>
 
             <GridColumn TItem="SoldItem" HeaderText="판매가격(길)" PropertyName="Price"
@@ -171,10 +163,10 @@
 
 <style>
     .ime-active {
-        -webkit-ime-mode:active;
-        -moz-ime-mode:active;
-        -ms-ime-mode:active;
-        ime-mode:active;
+        -webkit-ime-mode: active;
+        -moz-ime-mode: active;
+        -ms-ime-mode: active;
+        ime-mode: active;
     }
 </style>
 
