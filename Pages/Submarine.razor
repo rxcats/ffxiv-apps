@@ -37,7 +37,7 @@
     <Collapse @ref="_collapse">
         <Card>
             <CardBody>
-                <EditForm EditContext="@_editContext" OnValidSubmit="HandleValidSubmit" novalidate>
+                <EditForm EditContext="@_editContext" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator/>
 
                     <div class="form-group row mb-3">
@@ -295,7 +295,7 @@
                 _soldItemInput.InitializeInput();
                 _editContext = new EditContext(_soldItemInput);
 
-                await SoldItemReload();
+                await LoadSoldItem();
             }
             else
             {
@@ -450,7 +450,7 @@
                 ));
             }
 
-            await SoldItemReload();
+            await LoadSoldItem();
         }
         catch (Exception e)
         {
@@ -474,18 +474,23 @@
         ));
     }
 
+    private async Task LoadSoldItem()
+    {
+        _soldItems = await GetSoldItems();
+
+        _totalPrice = _soldItems
+            .Sum(item => item.Price) ?? 0;
+
+        await _grid.RefreshDataAsync();
+    }
+
     private async Task SoldItemReload()
     {
         try
         {
             PreloadService.Show();
 
-            _soldItems = await GetSoldItems();
-
-            _totalPrice = _soldItems
-                .Sum(item => item.Price) ?? 0;
-
-            await _grid.RefreshDataAsync();
+            await LoadSoldItem();
         }
         catch (Exception e)
         {
