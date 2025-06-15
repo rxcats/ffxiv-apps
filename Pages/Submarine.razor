@@ -27,13 +27,6 @@
 </div>
 
 <div class="mb-3">
-    <Button Color="ButtonColor.Primary" @onclick="ToggleContentAsync">
-        <Icon Name="IconName.Pencil"/>
-        판매금액 입력창
-    </Button>
-</div>
-
-<div class="mb-3">
     <Collapse @ref="_collapse">
         <Card>
             <CardBody>
@@ -102,19 +95,20 @@
 
 <div class="mb-3">
     <div class="mb-1">
+        <Button Color="ButtonColor.Primary" @onclick="ToggleContentAsync">
+            <Icon Name="IconName.Pencil"/>
+        </Button>
+
         <Button Color="ButtonColor.Danger" @onclick="DeleteSelectedItem">
             <Icon Name="IconName.Trash"/>
-            선택삭제
         </Button>
 
         <Button Color="ButtonColor.Primary" @onclick="SoldItemReload">
             <Icon Name="IconName.Recycle"/>
-            새로고침
         </Button>
 
         <Button Color="ButtonColor.Success">
-            <Icon Name="IconName.Coin"/>
-            총수입(길): @_totalPrice.ToString("N0")
+            🪙 총수입: @_totalPrice.ToString("N0")
         </Button>
     </div>
 
@@ -130,30 +124,22 @@
         Responsive="true">
 
         <GridColumns>
-            <GridColumn TItem="SoldItem" HeaderText="판매일" PropertyName="SoldDate"
-                        HeaderTextAlignment="Alignment.Center">
-                @context.SoldDate
-            </GridColumn>
-
-            <GridColumn TItem="SoldItem" HeaderText="아이템/수량" PropertyName="ItemName"
-                        HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            <GridColumn TItem="SoldItem" HeaderText="아이템" PropertyName="ItemName"
+                        HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Start">
                 <Image Src="@context.ItemIconUrl" Style="width: 40px; height: 40px;" Alt="@context.ItemName"/>
-                <Badge Color="BadgeColor.Secondary" IndicatorType="BadgeIndicatorType.RoundedPill">@context.Quantity</Badge>
+                <span>@context.ItemName</span>
+                <span>✕</span>
+                <span><Badge Color="BadgeColor.Secondary">@context.Quantity</Badge></span>
             </GridColumn>
 
-            <GridColumn TItem="SoldItem" HeaderText="아이템명" PropertyName="ItemName"
-                        HeaderTextAlignment="Alignment.Center">
-                @context.ItemName
-            </GridColumn>
-
-            <GridColumn TItem="SoldItem" HeaderText="판매가격(길)" PropertyName="Price"
+            <GridColumn TItem="SoldItem" HeaderText="🪙 판매가격" PropertyName="Price"
                         HeaderTextAlignment="Alignment.Center">
                 @context.Price?.ToString("N0")
             </GridColumn>
 
-            <GridColumn TItem="SoldItem" HeaderText="Id" PropertyName="Id"
+            <GridColumn TItem="SoldItem" HeaderText="판매일" PropertyName="SoldDate"
                         HeaderTextAlignment="Alignment.Center">
-                @context.Id
+                @context.SoldDate
             </GridColumn>
         </GridColumns>
     </Grid>
