@@ -1,14 +1,15 @@
-﻿@inherits LayoutComponentBase
-@inject IConfiguration Config
+﻿@using ffxiv_apps.Common
+@inherits LayoutComponentBase
+@inject Link Link
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <base href="/@(Config.GetValue<string>("AppBasePath"))"/>
+        <base href="/@(Link.BaseUrl)"/>
         <ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End"/>
     </HeaderSection>
 
     <SidebarSection>
-        <Sidebar2 Href="@GetHref("/")"
+        <Sidebar2 Href="@Link.GetHref("/")"
                   ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
                   Title="FF14 Apps"
                   BadgeText="1.0"
@@ -39,16 +40,11 @@
     {
         return new List<NavItem>
         {
-            new() { Id = "1", Href = GetHref("/"), IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
-            new() { Id = "2", Href = GetHref("/macro"), IconName = IconName.Mouse, Text = "FF14 Macro" },
-            new() { Id = "3", Href = GetHref("/housekeeper"), IconName = IconName.MinecartLoaded, Text = "FF14 집사장비" },
-            new() { Id = "4", Href = GetHref("/submarine"), IconName = IconName.Controller, Text = "FF14 고잉마샤호" },
+            new() { Id = "1", Href = Link.GetHref("/"), IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+            new() { Id = "2", Href = Link.GetHref("/macro"), IconName = IconName.Mouse, Text = "FF14 Macro" },
+            new() { Id = "3", Href = Link.GetHref("/housekeeper"), IconName = IconName.MinecartLoaded, Text = "FF14 집사장비" },
+            new() { Id = "4", Href = Link.GetHref("/submarine"), IconName = IconName.Controller, Text = "FF14 고잉마샤호" },
+            new() { Id = "5", Href = Link.GetHref("/game"), IconName = IconName.Joystick, Text = "게임" },
         };
     }
-
-    private string GetHref(string path)
-    {
-        return "/" + Config.GetValue<string>("AppBasePath")! + path.TrimStart('/');
-    }
-
 }

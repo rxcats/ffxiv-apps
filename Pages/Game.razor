@@ -1,0 +1,74 @@
+﻿@page "/game"
+@using System.Timers
+@using ffxiv_apps.Common
+@using ffxiv_apps.Game
+@inject Player Player
+@inject Controls Controls
+@inject World World
+@inject Graphics Graphics
+@inject Link Link
+
+<PageTitle>Game</PageTitle>
+
+<div @onkeydown="HandleKeyDown" @onkeyup="HandleKeyUp" @onkeydown:preventDefault
+     style="background-color: #000000; width: 80vw; height: 80vh; margin: auto"
+     tabindex="0" @ref="_mainDiv">
+    <div
+        style="color: white; top: @(Player.Top)px; left: @(Player.Left)px; width: 48px; height: 46px; overflow: hidden; position: relative">
+        <img
+            src="@Link.GetHref("images/FF6_iOS_Terra_Sprites.png")"
+            style="margin: 0 @(Graphics.PlayerOffset)px; transform: scaleX(@(Graphics.PlayerDirection))"/>
+    </div>
+</div>
+
+@code {
+
+    private ElementReference _mainDiv;
+    private Timer _timer = null!;
+
+    private void HandleKeyUp(KeyboardEventArgs e) =>
+        Controls.KeyUp(e.Code);
+
+    private void HandleKeyDown(KeyboardEventArgs e) =>
+        Controls.KeyDown(e.Code);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _mainDiv.FocusAsync();
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        _timer = new Timer();
+        _timer.Interval = 16;
+        _timer.Elapsed += TimerElapsed;
+        _timer.AutoReset = true;
+        _timer.Enabled = true;
+
+        return base.OnInitializedAsync();
+    }
+
+    private void TimerElapsed(object? source, ElapsedEventArgs e)
+    {
+        Update();
+        Draw();
+    }
+
+    private void Update()
+    {
+        World.ApplyPhysics();
+        if (Player.IsWalking)
+        {
+            Graphics.CyclePlayer();
+        }
+    }
+
+    private void Draw()
+    {
+        StateHasChanged();
+    }
+
+}
