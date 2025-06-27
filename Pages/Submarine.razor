@@ -57,7 +57,7 @@
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">수량: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
-                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Quantity" Placeholder="판매수량"/>
+                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Quantity" Placeholder="판매수량" Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.Quantity)"/>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">판매가격: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
-                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Price" Placeholder="판매가격"/>
+                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Price" Placeholder="판매가격" Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.Price)"/>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">판매일: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
-                            <DateInput TValue="DateOnly" @bind-Value="_soldItemInput.SoldDate" Placeholder="판매일"/>
+                            <DateInput TValue="DateOnly" @bind-Value="_soldItemInput.SoldDate" Placeholder="판매일" Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.SoldDate)"/>
                         </div>
                     </div>
