@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Json.Serialization
+@using ffxiv_apps.Component
 @using ffxiv_apps.Domain
 @using Microsoft.AspNetCore.Components.WebAssembly.Hosting
 
@@ -57,7 +58,8 @@
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">수량: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
-                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Quantity" Placeholder="판매수량" Class="ime-active"/>
+                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Quantity" Placeholder="판매수량"
+                                         Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.Quantity)"/>
                         </div>
                     </div>
@@ -65,7 +67,8 @@
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">판매가격: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
-                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Price" Placeholder="판매가격" Class="ime-active"/>
+                            <NumberInput TValue="int" @bind-Value="_soldItemInput.Price" Placeholder="판매가격"
+                                         Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.Price)"/>
                         </div>
                     </div>
@@ -73,7 +76,8 @@
                     <div class="form-group row mb-3">
                         <label class="col-md-2 col-form-label">판매일: <span class="text-danger">*</span></label>
                         <div class="col-md-10">
-                            <DateInput TValue="DateOnly" @bind-Value="_soldItemInput.SoldDate" Placeholder="판매일" Class="ime-active"/>
+                            <DateInput TValue="DateOnly" @bind-Value="_soldItemInput.SoldDate" Placeholder="판매일"
+                                       Class="ime-active"/>
                             <ValidationMessage For="@(() => _soldItemInput.SoldDate)"/>
                         </div>
                     </div>
@@ -99,12 +103,16 @@
             <Icon Name="IconName.Pencil"/>
         </Button>
 
-        <Button Color="ButtonColor.Danger" @onclick="DeleteSelectedItem">
-            <Icon Name="IconName.Trash"/>
+        <Button Color="ButtonColor.Primary" @onclick="ShowRecentSoldPriceSumModal">
+            <Icon Name="IconName.Calculator"/>
         </Button>
 
         <Button Color="ButtonColor.Primary" @onclick="SoldItemReload">
             <Icon Name="IconName.Recycle"/>
+        </Button>
+
+        <Button Color="ButtonColor.Danger" @onclick="DeleteSelectedItem">
+            <Icon Name="IconName.Trash"/>
         </Button>
 
         <Button Color="ButtonColor.Success">
@@ -145,6 +153,8 @@
     </Grid>
 </div>
 
+<Modal @ref="_recentSoldPriceSumModal"></Modal>
+
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight"/>
 
 <style>
@@ -184,6 +194,40 @@
     private SoldItem? _soldItemForDelete;
 
     private int _totalPrice;
+
+    private Modal _recentSoldPriceSumModal = null!;
+
+    private async Task ShowRecentSoldPriceSumModal()
+    {
+        RecentSoldPriceSum[] items = [];
+
+        try
+        {
+            PreloadService.Show();
+
+            using var response = await HttpClient.GetAsync(WithApiPath("recentSoldPriceSum"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                items = (await response.Content.ReadFromJsonAsync<RecentSoldPriceSum[]>())!;
+            }
+        }
+        catch (Exception)
+        {
+            // ignore
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "Items", items }
+        };
+
+        await _recentSoldPriceSumModal.ShowAsync<RecentSoldPriceSumModalComponent>(title: "최근 총수입", parameters: parameters);
+    }
 
     protected override void OnInitialized()
     {
@@ -556,5 +600,6 @@
         public string Name { get; init; } = null!;
         public int Level { get; init; }
     }
+
 
 }
