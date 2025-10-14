@@ -1,5 +1,6 @@
 @page "/submarine"
 @using System.ComponentModel.DataAnnotations
+@using System.Net
 @using System.Text
 @using System.Text.Json.Serialization
 @using ffxiv_apps.Component
@@ -303,13 +304,17 @@
             return;
         }
 
-        _soldItemInput.Authorization = _authToken;
-
         try
         {
             PreloadService.Show();
 
-            using var response = await HttpClient.PostAsJsonAsync(WithApiPath(), _soldItemInput);
+            var request = new HttpRequestMessage(HttpMethod.Post, WithApiPath())
+            {
+                Content = JsonContent.Create(_soldItemInput)
+            };
+            request.Headers.Add("Authorization", _authToken);
+
+            using var response = await HttpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -326,6 +331,17 @@
                 _editContext = new EditContext(_soldItemInput);
 
                 await LoadSoldItem();
+            }
+            else if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                ToastService.Notify(new ToastMessage
+                (
+                    type: ToastType.Danger,
+                    iconName: IconName.Bug,
+                    title: "저장실패!",
+                    helpText: $"{DateTime.Now.ToLocalTime()}",
+                    message: "인증토큰이 잘못되었습니다."
+                ));
             }
             else
             {
@@ -441,15 +457,13 @@
         var body = new Dictionary<string, object>
         {
             { "id", _soldItemForDelete.Id! },
-            { "authorization", _authToken }
         };
 
-        var request = new HttpRequestMessage
+        var request = new HttpRequestMessage(HttpMethod.Delete, WithApiPath(_soldItemForDelete.Id.ToString()))
         {
-            Content = JsonContent.Create(body),
-            Method = HttpMethod.Delete,
-            RequestUri = new Uri(WithApiPath(_soldItemForDelete.Id.ToString()), UriKind.Relative)
+            Content = JsonContent.Create(body)
         };
+        request.Headers.Add("Authorization", _authToken);
 
         try
         {
@@ -466,6 +480,17 @@
                     title: "삭제완료!",
                     helpText: $"{DateTime.Now.ToLocalTime()}",
                     message: "삭제되었습니다."
+                ));
+            }
+            else if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                ToastService.Notify(new ToastMessage
+                (
+                    type: ToastType.Danger,
+                    iconName: IconName.Bug,
+                    title: "삭제실패!",
+                    helpText: $"{DateTime.Now.ToLocalTime()}",
+                    message: "인증토큰이 잘못되었습니다."
                 ));
             }
             else
@@ -549,8 +574,6 @@
 
         [Required(ErrorMessage = "판매일을 입력하세요.")]
         public DateOnly SoldDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-
-        public string? Authorization { get; set; }
 
         [JsonIgnore] public string ItemDesc => ItemId == 0 ? string.Empty : $"[#{ItemId}] {ItemName}";
 
