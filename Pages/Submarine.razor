@@ -99,9 +99,49 @@
 </div>
 
 <div class="mb-3">
+    <Collapse @ref="_collapseBulkInput">
+        <Card>
+            <CardBody>
+                <EditForm EditContext="@_editContextBulkInput" OnValidSubmit="HandleValidSubmitBulkInput">
+                    <DataAnnotationsValidator/>
+
+                    <div class="form-group row mb-3">
+                        <label class="col-md-2 col-form-label">인증토큰: <span class="text-danger">*</span></label>
+                        <div class="col-md-10">
+                            <TextInput @bind-Value="_authTokenBulkInput" Placeholder="인증토큰"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label class="col-md-2 col-form-label">판매내역: <span class="text-danger">*</span></label>
+                        <div class="col-md-10">
+                            <TextAreaInput Rows="5" @bind-Value="_soldItemBulkInput.Text" Placeholder="판매내역 채팅메시지"/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end"
+                                    @onclick="ResetFormBulkInput">초기화
+                            </Button>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="float-end me-2">저장
+                            </Button>
+                        </div>
+                    </div>
+                </EditForm>
+            </CardBody>
+        </Card>
+    </Collapse>
+</div>
+
+<div class="mb-3">
     <div class="mb-1">
         <Button Color="ButtonColor.Primary" @onclick="ToggleContentAsync">
             <Icon Name="IconName.Pencil"/>
+        </Button>
+
+        <Button Color="ButtonColor.Primary" @onclick="ToggleBulkInputContentAsync">
+            <Icon Name="IconName.FileText"/>
         </Button>
 
         <Button Color="ButtonColor.Primary" @onclick="ShowRecentSoldPriceSumModal">
@@ -198,6 +238,14 @@
 
     private Modal _recentSoldPriceSumModal = null!;
 
+    private Collapse _collapseBulkInput = null!;
+
+    private string? _authTokenBulkInput;
+
+    private SoldItemBulkInput _soldItemBulkInput = new();
+
+    private EditContext? _editContextBulkInput;
+
     private async Task ShowRecentSoldPriceSumModal()
     {
         RecentSoldPriceSum[] items = [];
@@ -236,6 +284,7 @@
         _searchYear = now.Year;
         _searchMonth = now.Month;
         _editContext = new EditContext(_soldItemInput);
+        _editContextBulkInput = new EditContext(_soldItemBulkInput);
 
         Task.Run(async () => await SoldItemReload());
         base.OnInitialized();
@@ -288,6 +337,8 @@
     }
 
     private async Task ToggleContentAsync() => await _collapse.ToggleAsync();
+
+    private async Task ToggleBulkInputContentAsync() => await _collapseBulkInput.ToggleAsync();
 
     public async Task HandleValidSubmit()
     {
@@ -369,6 +420,88 @@
     {
         _soldItemInput.Reset();
         _editContext = new EditContext(_soldItemInput);
+    }
+
+    private void ResetFormBulkInput()
+    {
+        _soldItemBulkInput.InitializeInput();
+        _editContext = new EditContext(_soldItemBulkInput);
+    }
+
+    public async Task HandleValidSubmitBulkInput()
+    {
+        if (string.IsNullOrWhiteSpace(_authTokenBulkInput))
+        {
+            ToastService.Notify(new ToastMessage
+            (
+                type: ToastType.Danger,
+                iconName: IconName.Bug,
+                title: "저장실패!",
+                helpText: $"{DateTime.Now.ToLocalTime()}",
+                message: "인증토큰이 필요합니다."
+            ));
+            return;
+        }
+
+        try
+        {
+            PreloadService.Show();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, WithApiPath("bulk"))
+            {
+                Content = JsonContent.Create(_soldItemBulkInput)
+            };
+            request.Headers.Add("Authorization", _authTokenBulkInput);
+
+            using var response = await HttpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                ToastService.Notify(new ToastMessage
+                (
+                    type: ToastType.Success,
+                    iconName: IconName.Check2All,
+                    title: "저장완료!",
+                    helpText: $"{DateTime.Now.ToLocalTime()}",
+                    message: "저장되었습니다."
+                ));
+
+                _soldItemBulkInput.InitializeInput();
+                _editContextBulkInput = new EditContext(_soldItemBulkInput);
+
+                await LoadSoldItem();
+            }
+            else if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                ToastService.Notify(new ToastMessage
+                (
+                    type: ToastType.Danger,
+                    iconName: IconName.Bug,
+                    title: "저장실패!",
+                    helpText: $"{DateTime.Now.ToLocalTime()}",
+                    message: "인증토큰이 잘못되었습니다."
+                ));
+            }
+            else
+            {
+                ToastService.Notify(new ToastMessage
+                (
+                    type: ToastType.Danger,
+                    iconName: IconName.Bug,
+                    title: "저장실패!",
+                    helpText: $"{DateTime.Now.ToLocalTime()}",
+                    message: "오류가 발생했습니다."
+                ));
+            }
+        }
+        catch (Exception e)
+        {
+            NotifySystemError(e.Message);
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
     }
 
     private async Task ItemNameChanged(string itemName)
@@ -613,6 +746,17 @@
         {
             InitializeInput();
             SoldDate = DateOnly.FromDateTime(DateTime.Now);
+        }
+    }
+
+    public class SoldItemBulkInput
+    {
+        [Required(ErrorMessage = "판매내역을 입력하세요.")]
+        public string Text { get; set; } = string.Empty;
+
+        public void InitializeInput()
+        {
+            Text = string.Empty;
         }
     }
 
