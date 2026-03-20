@@ -3,8 +3,6 @@ import { onMounted, reactive, ref } from 'vue'
 import axios from 'axios'
 import 'reflect-metadata'
 import { DataTable } from 'simple-datatables'
-import type { DataTableOptions } from 'simple-datatables/dist/dts/types'
-import { type DataOption, type headerCellType, type renderType } from 'simple-datatables/src/types.ts'
 import { plainToInstance } from 'class-transformer'
 import { DateTime } from 'luxon'
 import fallbackImg from '@/assets/fallback.png'
@@ -78,7 +76,7 @@ class SoldItem {
   }
 }
 
-const options: DataTableOptions = {
+const options = {
   searchable: false,
   paging: false,
   labels: {
@@ -90,19 +88,19 @@ const options: DataTableOptions = {
   },
   data: {
     headings: [
-      { data: 'actions', text: '선택' } as headerCellType,
-      { data: 'itemName', text: '아이템' } as headerCellType,
-      { data: 'price', text: '판매가격' } as headerCellType,
-      { data: 'soldDate', text: '판매일' } as headerCellType,
+      { data: 'actions', text: '선택' },
+      { data: 'itemName', text: '아이템' },
+      { data: 'price', text: '판매가격' },
+      { data: 'soldDate', text: '판매일' },
     ] as any[],
     data: []
-  } as DataOption,
+  },
   columns: [
     {
       select: 0,
       render: function (data: any) {
         return `<input type="checkbox" class="chk w-4 h-4 border border-default-medium rounded-sm bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft" data-id="${data[0].data}">`
-      } as renderType
+      }
     }
   ]
 }
