@@ -397,7 +397,7 @@ async function confirmInputModal() {
   try {
     const response = await axios.post(url, reqBody, { headers: { 'Authorization': authToken.value } })
 
-    if (response.status === 200) {
+    if (response.status >= 200 || response.status < 300) {
       triggerSuccessToast('저장 성공')
     } else {
       triggerHttpErrorToast('저장 실패', response.status)
@@ -407,7 +407,7 @@ async function confirmInputModal() {
     console.error(e)
   } finally {
     closeLoading()
-    closeInputModal()
+    initSoldItemInput()
   }
 }
 
@@ -437,7 +437,7 @@ async function confirmChatInputModal() {
       text: soldItemBulkInput.text,
     } as SoldItemBulkInput, { headers: { 'Authorization': authToken.value } })
 
-    if (response.status === 200) {
+    if (response.status >= 200 || response.status < 300) {
       triggerSuccessToast('저장 성공')
     } else {
       triggerHttpErrorToast('저장 실패', response.status)
