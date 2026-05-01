@@ -260,6 +260,43 @@ async function fetchItemData() {
   }
 }
 
+async function reloadSoldItem() {
+  const url = apiUrl('/api/submarine/list')
+
+  if (!dataTable.value) {
+    dataTable.value = new DataTable('#dataTable', options)
+  }
+  
+  try {
+    const start = DateTime.fromObject({ year: searchYear.value, month: searchMonth.value, day: 1 })
+    const end = start.endOf('month')
+
+    const reqBody: SearchReqBody = {
+      startDate: start.toISODate()!,
+      endDate: end.toISODate()!
+    }
+
+    const response = await axios.post(url, reqBody)
+
+    if (response.status === 200) {
+      let data: any[] = []
+      let sum = 0
+      
+      const soldItems = plainToInstance<SoldItem, any[]>(SoldItem, response.data)
+      for (const item of soldItems) {
+        data.push(item.toDataTableData())
+        sum += item.price
+      }
+      tableSum.value = sum
+      
+      dataTable.value.data.data = []
+      dataTable.value.insert(data)
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 async function fetchSoldItems() {
   const url = apiUrl('/api/submarine/list')
   triggerLoading()
@@ -399,6 +436,7 @@ async function confirmInputModal() {
 
     if (response.status >= 200 || response.status < 300) {
       triggerSuccessToast('저장 성공')
+      await reloadSoldItem()
     } else {
       triggerHttpErrorToast('저장 실패', response.status)
     }
@@ -439,6 +477,7 @@ async function confirmChatInputModal() {
 
     if (response.status >= 200 || response.status < 300) {
       triggerSuccessToast('저장 성공')
+      await reloadSoldItem()
     } else {
       triggerHttpErrorToast('저장 실패', response.status)
     }
