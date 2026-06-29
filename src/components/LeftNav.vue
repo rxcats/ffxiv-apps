@@ -45,6 +45,12 @@ defineProps<{
             <span class="ml-3">FF14 고잉마샤호</span>
           </router-link>
         </li>
+        <li>
+          <router-link to="/cultureland"  class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i class="fa fa-ticket-simple"></i>
+            <span class="ml-3">컬쳐랜드 상품권</span>
+          </router-link>
+        </li>
       </ul>
     </div>
   </aside>

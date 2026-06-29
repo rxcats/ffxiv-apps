@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/pages/Home.vue'
 import ErrorPage from '@/pages/ErrorPage.vue'
 import Submarine from '@/pages/Submarine.vue'
+import Cultureland from '@/pages/Cultureland.vue'
 import Housekeeper from '@/pages/Housekeeper.vue'
 import MacroCalc from '@/pages/MacroCalc.vue'
 import LinkCollection from '@/pages/LinkCollection.vue'
@@ -15,6 +16,7 @@ const routes = [
   { path: '/housekeeper', component: Housekeeper, name: 'Housekeeper', meta: { layout: 'dashboard' } },
   { path: '/link-collection', component: LinkCollection, name: 'LinkCollection', meta: { layout: 'dashboard' } },
   { path: '/submarine', component: Submarine, name: 'Submarine', meta: { layout: 'dashboard' } },
+  { path: '/cultureland', component: Cultureland, name: 'Cultureland', meta: { layout: 'dashboard' } },
   { path: '/:pathMatch(.*)*', component: ErrorPage, name: 'ErrorPage', meta: { layout: 'none' } },
 ]
 
