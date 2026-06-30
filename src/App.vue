@@ -12,11 +12,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="antialiased bg-gray-50 dark:bg-gray-900">
+  <div class="antialiased bg-gray-50 dark:bg-gray-900 h-screen">
     <div v-if="$route.meta.layout === 'dashboard'">
       <Header @toggle-sidebar="isSidebarOpen = !isSidebarOpen"/>
       <LeftNav :is-open="isSidebarOpen"/>
-      <main class="p-4 md:ml-64 pt-20 h-screen overflow-y-auto">
+      <main class="bg-gray-50 dark:bg-gray-900 p-4 md:ml-64 pt-20">
         <router-view/>
       </main>
     </div>
